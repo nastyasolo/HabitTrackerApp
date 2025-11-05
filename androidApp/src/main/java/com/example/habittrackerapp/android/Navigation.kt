@@ -9,6 +9,7 @@ import com.example.habittrackerapp.android.screens.AddHabitScreen
 import com.example.habittrackerapp.android.screens.HabitTrackerScreen
 import com.example.habittrackerapp.android.screens.TaskScreen
 
+
 @Composable
 fun MainNavigation(repository: HabitRepository) {
     val navController = rememberNavController()
@@ -28,7 +29,10 @@ fun MainNavigation(repository: HabitRepository) {
         }
         composable("addHabit") {
             AddHabitScreen(
-                onSave = { navController.popBackStack() },
+                onSave = { newHabit ->
+                    repository.addHabit(newHabit)
+                    navController.popBackStack()
+                },
                 onCancel = { navController.popBackStack() }
             )
         }

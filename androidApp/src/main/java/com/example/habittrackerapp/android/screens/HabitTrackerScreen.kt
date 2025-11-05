@@ -26,16 +26,23 @@ fun HabitTrackerScreen(
             .padding(16.dp)
     ) {
         Text(
-            text = "Мои привычки (${habits.size})",
+            text = "Мои привычки",
             style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
+            modifier = Modifier.fillMaxWidth()
         )
 
+        Text(
+            text = "Всего: ${habits.size} • Выполнено: ${habits.count { it.isCompleted }}",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
         LazyColumn(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(habits, key = { it.id }) { habit ->
                 HabitItem(
@@ -47,21 +54,22 @@ fun HabitTrackerScreen(
             }
         }
 
-        Column {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Button(
                 onClick = onAddHabit,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Добавить привычку")
             }
 
-            Button(
+            OutlinedButton(
                 onClick = onNavigateToTasks,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Перейти к задачам")
             }
@@ -72,9 +80,7 @@ fun HabitTrackerScreen(
 @Composable
 fun HabitItem(habit: Habit, onCheckedChange: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
+        modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
@@ -96,11 +102,20 @@ fun HabitItem(habit: Habit, onCheckedChange: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                Text(
-                    text = "Стрик: ${habit.streak}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Text(
+                        text = "Стрик: ${habit.streak}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = habit.type.displayName,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
             }
             Checkbox(
                 checked = habit.isCompleted,

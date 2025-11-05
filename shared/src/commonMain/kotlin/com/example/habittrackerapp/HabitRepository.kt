@@ -5,15 +5,38 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class HabitRepository {
-    private val _habits = MutableStateFlow<List<Habit>>(
-        listOf(
-            Habit(id = "1", name = "Бег", description = "Утренняя пробежка"),
-            Habit(id = "2", name = "Чтение", description = "30 минут в день"),
-            Habit(id = "3", name = "Вода", description = "2 литра воды")
-        )
-    )
-
+    private val _habits = MutableStateFlow<List<Habit>>(emptyList())
     val habits: StateFlow<List<Habit>> = _habits.asStateFlow()
+
+    init {
+        // Добавим тестовые данные
+        _habits.value = listOf(
+            Habit(
+                id = "1",
+                name = "Утренняя зарядка",
+                description = "15 минут упражнений",
+                type = HabitType.DAILY,
+                streak = 5,
+                isCompleted = false
+            ),
+            Habit(
+                id = "2",
+                name = "Чтение",
+                description = "30 минут в день",
+                type = HabitType.DAILY,
+                streak = 3,
+                isCompleted = true
+            ),
+            Habit(
+                id = "3",
+                name = "Прогулка",
+                description = "Вечерняя прогулка 20 минут",
+                type = HabitType.DAILY,
+                streak = 7,
+                isCompleted = false
+            )
+        )
+    }
 
     fun addHabit(habit: Habit) {
         _habits.value = _habits.value + habit
@@ -23,7 +46,13 @@ class HabitRepository {
         _habits.value = _habits.value.map { habit ->
             if (habit.id == id) {
                 val newIsCompleted = !habit.isCompleted
-                val newStreak = if (newIsCompleted) habit.streak + 1 else habit.streak
+                val newStreak = if (newIsCompleted && !habit.isCompleted) {
+                    habit.streak + 1
+                } else if (!newIsCompleted) {
+                    maxOf(0, habit.streak - 1)
+                } else {
+                    habit.streak
+                }
                 habit.copy(
                     isCompleted = newIsCompleted,
                     streak = newStreak
@@ -34,5 +63,11 @@ class HabitRepository {
 
     fun deleteHabit(id: String) {
         _habits.value = _habits.value.filter { it.id != id }
+    }
+
+    fun updateHabit(updatedHabit: Habit) {
+        _habits.value = _habits.value.map { habit ->
+            if (habit.id == updatedHabit.id) updatedHabit else habit
+        }
     }
 }
